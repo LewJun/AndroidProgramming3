@@ -2,8 +2,10 @@ package com.example.lewjun.geoquiz
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.Gravity
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
 
@@ -12,7 +14,8 @@ class QuizActivity : AppCompatActivity() {
     private lateinit var mTrueButton: Button
     private lateinit var mFalseButton: Button
     private lateinit var mQuestionTextView: TextView
-    private lateinit var mNextButton: Button
+    private lateinit var mNextButton: ImageButton
+    private lateinit var mPrevButton: ImageButton
 
     // 问题仓库
     private var mQuestionBank = arrayOf(
@@ -46,6 +49,11 @@ class QuizActivity : AppCompatActivity() {
             updateQuestionToNext()
         }
 
+        mPrevButton = findViewById(R.id.prev_button)
+        mPrevButton.setOnClickListener {
+            updateQuestionToPrev()
+        }
+
         mQuestionTextView = findViewById(R.id.question_text_view)
         mQuestionTextView.setOnClickListener {
             updateQuestionToNext()
@@ -54,7 +62,16 @@ class QuizActivity : AppCompatActivity() {
     }
 
     /**
-     * 显示下一个问题
+     * 显示上一个题目
+     */
+    private fun updateQuestionToPrev() {
+        val size = mQuestionBank.size
+        mCurrentQuestionIndex = ((mCurrentQuestionIndex - 1) + size) % size
+        updateQuestion()
+    }
+
+    /**
+     * 显示下一个题目
      */
     private fun updateQuestionToNext() {
         mCurrentQuestionIndex = (mCurrentQuestionIndex + 1) % mQuestionBank.size
@@ -87,6 +104,7 @@ class QuizActivity : AppCompatActivity() {
      * 更新问题
      */
     private fun updateQuestion() {
+        Log.i("Tag", mCurrentQuestionIndex.toString())
         mQuestionTextView.setText(mQuestionBank[mCurrentQuestionIndex].textResId)
     }
 }
