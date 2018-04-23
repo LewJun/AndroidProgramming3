@@ -43,11 +43,21 @@ class QuizActivity : AppCompatActivity() {
 
         mNextButton = findViewById(R.id.next_button)
         mNextButton.setOnClickListener {
-            mCurrentQuestionIndex = (mCurrentQuestionIndex + 1) % mQuestionBank.size
-            updateQuestion()
+            updateQuestionToNext()
         }
 
         mQuestionTextView = findViewById(R.id.question_text_view)
+        mQuestionTextView.setOnClickListener {
+            updateQuestionToNext()
+        }
+        updateQuestion()
+    }
+
+    /**
+     * 显示下一个问题
+     */
+    private fun updateQuestionToNext() {
+        mCurrentQuestionIndex = (mCurrentQuestionIndex + 1) % mQuestionBank.size
         updateQuestion()
     }
 
