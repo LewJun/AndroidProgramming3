@@ -11,6 +11,7 @@ import android.widget.Toast
 
 class QuizActivity : AppCompatActivity() {
 
+    private val TAG = "QuizActivity"
     private lateinit var mTrueButton: Button
     private lateinit var mFalseButton: Button
     private lateinit var mQuestionTextView: TextView
@@ -30,9 +31,19 @@ class QuizActivity : AppCompatActivity() {
     // 当前问题下标
     private var mCurrentQuestionIndex = 0
 
+    private val QUESTION_INDEX = "QUESTION_INDEX"
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        outState?.putInt(QUESTION_INDEX, mCurrentQuestionIndex)
+    }
+
+    // 1 创建Activity实例时调用（在内存中）
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i(TAG, "onCreate called")
         setContentView(R.layout.activity_quiz)
+
+        mCurrentQuestionIndex = savedInstanceState?.getInt(QUESTION_INDEX, 0) ?: 0
 
         mTrueButton = findViewById(R.id.true_button)
         mTrueButton.setOnClickListener {
@@ -60,6 +71,45 @@ class QuizActivity : AppCompatActivity() {
         }
         updateQuestion()
     }
+
+    // 2 屏幕可见或重新可见后调用
+    override fun onStart() {
+        super.onStart()
+        Log.i(TAG, "onStart called")
+    }
+
+    // 3 屏幕可见或重新可见后调用，在onStart后调用
+    override fun onResume() {
+        super.onResume()
+        Log.i(TAG, "onResume called")
+    }
+
+    // 4 点主屏幕键和最近应用键会调用
+    override fun onPause() {
+        super.onPause()
+        Log.i(TAG, "onPause called")
+    }
+
+    // 5 点主屏幕键和最近应用键会调用，在onPause之后
+    override fun onStop() {
+        super.onStop()
+        Log.i(TAG, "onStop called")
+    }
+
+    // 6 后退会销毁activity实例
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i(TAG, "onDestroy called")
+    }
+
+    // 旋转设备会依次调用
+    // onPause
+    // onStop
+    // onDestroy
+    // onCreate
+    // onStart
+    // onResume
+    // 即Activity会销毁，然后重新建立
 
     /**
      * 显示上一个题目
