@@ -28,10 +28,14 @@ class QuizActivity : AppCompatActivity() {
             , Question(R.string.question_asia, true)
     )
 
-    // 当前问题下标
+    /** 当前问题下标 */
     private var mCurrentQuestionIndex = 0
 
     private val QUESTION_INDEX = "QUESTION_INDEX"
+
+    /** 问题回答详情 */
+    private val mAnsweredInfo = mutableMapOf<Int, Boolean>()
+
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         outState?.putInt(QUESTION_INDEX, mCurrentQuestionIndex)
@@ -139,6 +143,11 @@ class QuizActivity : AppCompatActivity() {
             R.string.incorrect_toast
         }
         showMsg(msgResId)
+
+        mAnsweredInfo[mCurrentQuestionIndex] = isUserPressedTrue
+
+        mTrueButton.isEnabled = false
+        mFalseButton.isEnabled = false
     }
 
     /**
@@ -156,5 +165,14 @@ class QuizActivity : AppCompatActivity() {
     private fun updateQuestion() {
         Log.i("Tag", mCurrentQuestionIndex.toString())
         mQuestionTextView.setText(mQuestionBank[mCurrentQuestionIndex].textResId)
+        val b = mAnsweredInfo[mCurrentQuestionIndex]
+        if (b != null) {
+            mTrueButton.isEnabled = false
+            mFalseButton.isEnabled = false
+            Toast.makeText(this@QuizActivity, "You've answered $b", Toast.LENGTH_SHORT).show()
+        } else {
+            mTrueButton.isEnabled = true
+            mFalseButton.isEnabled = true
+        }
     }
 }
