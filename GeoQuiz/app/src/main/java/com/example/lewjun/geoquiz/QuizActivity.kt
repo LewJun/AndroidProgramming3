@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
 import android.widget.Toast
+import java.text.DecimalFormat
 
 class QuizActivity : AppCompatActivity() {
 
@@ -148,6 +149,14 @@ class QuizActivity : AppCompatActivity() {
 
         mTrueButton.isEnabled = false
         mFalseButton.isEnabled = false
+
+        if (mAnsweredInfo.size == mQuestionBank.size) {
+            val successCount = mAnsweredInfo.filter { it.value == mQuestionBank[it.key].answerTrue }.count()
+            Toast.makeText(this@QuizActivity,
+                    "The success rate ${DecimalFormat("##.##%")
+                            .format(successCount / mAnsweredInfo.size)}",
+                    Toast.LENGTH_SHORT).show()
+        }
     }
 
     /**
