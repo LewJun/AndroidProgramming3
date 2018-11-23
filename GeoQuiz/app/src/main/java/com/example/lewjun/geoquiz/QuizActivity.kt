@@ -34,9 +34,17 @@ class QuizActivity : AppCompatActivity() {
     /** 问题回答详情 */
     private val mAnsweredInfo = mutableMapOf<Int, Boolean>()
 
+    private val ANSWERED_INFO = "ANSWERED_INFO"
+
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        outState?.putInt(QUESTION_INDEX, mCurrentQuestionIndex)
+        outState?.let {
+            outState.putInt(QUESTION_INDEX, mCurrentQuestionIndex)
+
+            mAnsweredInfo.entries.forEach {
+                outState.putString("$ANSWERED_INFO${it.key}", "${it.key}:${it.value}")
+            }
+        }
     }
 
     // 1 创建Activity实例时调用（在内存中）
@@ -46,6 +54,12 @@ class QuizActivity : AppCompatActivity() {
         setContentView(R.layout.activity_quiz)
 
         mCurrentQuestionIndex = savedInstanceState?.getInt(QUESTION_INDEX, 0) ?: 0
+        savedInstanceState?.keySet()?.forEach {
+            if (it.startsWith(ANSWERED_INFO)) {
+                val values = savedInstanceState.getString(it).split(":")
+                mAnsweredInfo[values[0].toInt()] = values[1].toBoolean()
+            }
+        }
 
         mTrueButton = findViewById(R.id.true_button)
         mTrueButton.setOnClickListener {
