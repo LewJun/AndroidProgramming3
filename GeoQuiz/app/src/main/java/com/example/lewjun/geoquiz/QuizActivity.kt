@@ -2,12 +2,9 @@ package com.example.lewjun.geoquiz
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
-import android.view.Gravity
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
-import android.widget.Toast
 import java.text.DecimalFormat
 
 class QuizActivity : AppCompatActivity() {
@@ -45,7 +42,7 @@ class QuizActivity : AppCompatActivity() {
     // 1 创建Activity实例时调用（在内存中）
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i(TAG, "onCreate called")
+        logi(TAG, "onCreate called")
         setContentView(R.layout.activity_quiz)
 
         mCurrentQuestionIndex = savedInstanceState?.getInt(QUESTION_INDEX, 0) ?: 0
@@ -80,31 +77,31 @@ class QuizActivity : AppCompatActivity() {
     // 2 屏幕可见或重新可见后调用
     override fun onStart() {
         super.onStart()
-        Log.i(TAG, "onStart called")
+        logi(TAG, "onStart called")
     }
 
     // 3 屏幕可见或重新可见后调用，在onStart后调用
     override fun onResume() {
         super.onResume()
-        Log.i(TAG, "onResume called")
+        logi(TAG, "onResume called")
     }
 
     // 4 点主屏幕键和最近应用键会调用
     override fun onPause() {
         super.onPause()
-        Log.i(TAG, "onPause called")
+        logi(TAG, "onPause called")
     }
 
     // 5 点主屏幕键和最近应用键会调用，在onPause之后
     override fun onStop() {
         super.onStop()
-        Log.i(TAG, "onStop called")
+        logi(TAG, "onStop called")
     }
 
     // 6 后退会销毁activity实例
     override fun onDestroy() {
         super.onDestroy()
-        Log.i(TAG, "onDestroy called")
+        logi(TAG, "onDestroy called")
     }
 
     // 旋转设备会依次调用
@@ -138,12 +135,13 @@ class QuizActivity : AppCompatActivity() {
      */
     private fun checkAnswer(isUserPressedTrue: Boolean) {
         val isAnswerTrue = mQuestionBank[mCurrentQuestionIndex].answerTrue
-        val msgResId = if (isUserPressedTrue == isAnswerTrue) {
-            R.string.correct_toast
-        } else {
-            R.string.incorrect_toast
-        }
-        showMsg(msgResId)
+        toast(
+                if (isUserPressedTrue == isAnswerTrue) {
+                    R.string.correct_toast
+                } else {
+                    R.string.incorrect_toast
+                }
+        )
 
         mAnsweredInfo[mCurrentQuestionIndex] = isUserPressedTrue
 
@@ -152,33 +150,22 @@ class QuizActivity : AppCompatActivity() {
 
         if (mAnsweredInfo.size == mQuestionBank.size) {
             val successCount = mAnsweredInfo.filter { it.value == mQuestionBank[it.key].answerTrue }.count()
-            Toast.makeText(this@QuizActivity,
-                    "The success rate ${DecimalFormat("##.##%")
-                            .format(successCount / mAnsweredInfo.size)}",
-                    Toast.LENGTH_SHORT).show()
+            toast("The success rate ${DecimalFormat("##.##%")
+                    .format(successCount / mAnsweredInfo.size)}")
         }
-    }
-
-    /**
-     * 显示toast消息
-     */
-    private fun showMsg(msgResId: Int) {
-        val toast = Toast.makeText(this@QuizActivity, msgResId, Toast.LENGTH_SHORT)
-        toast.setGravity(Gravity.TOP, 0, 0)
-        toast.show()
     }
 
     /**
      * 更新问题
      */
     private fun updateQuestion() {
-        Log.i("Tag", mCurrentQuestionIndex.toString())
+        logi("Tag", mCurrentQuestionIndex.toString())
         mQuestionTextView.setText(mQuestionBank[mCurrentQuestionIndex].textResId)
         val b = mAnsweredInfo[mCurrentQuestionIndex]
         if (b != null) {
             mTrueButton.isEnabled = false
             mFalseButton.isEnabled = false
-            Toast.makeText(this@QuizActivity, "You've answered $b", Toast.LENGTH_SHORT).show()
+            toast("You've answered $b")
         } else {
             mTrueButton.isEnabled = true
             mFalseButton.isEnabled = true
