@@ -2,6 +2,8 @@ package com.example.lewjun.geoquiz
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
@@ -116,6 +118,30 @@ class QuizActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         logi(TAG, "onDestroy called")
+    }
+
+    /**
+     * 创建菜单时调用
+     */
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.quiz, menu)
+        return true
+    }
+
+    /**
+     * 菜单项被选择
+     */
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        item?.let {
+            when (item.itemId) {
+                R.id.mnu_reset -> {
+                    mAnsweredInfo.clear()
+                    updateQuestion()
+                }
+                R.id.mnu_settings -> toast(item.title)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     // 旋转设备会依次调用
