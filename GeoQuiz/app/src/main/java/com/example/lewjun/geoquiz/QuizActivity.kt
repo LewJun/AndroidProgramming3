@@ -175,13 +175,7 @@ class QuizActivity : AppCompatActivity() {
      */
     private fun checkAnswer(isUserPressedTrue: Boolean) {
         val isAnswerTrue = mQuestionBank[mCurrentQuestionIndex].answerTrue
-        toast(
-                if (isUserPressedTrue == isAnswerTrue) {
-                    R.string.correct_toast
-                } else {
-                    R.string.incorrect_toast
-                }
-        )
+        toast(if (isUserPressedTrue == isAnswerTrue) R.string.correct_toast else R.string.incorrect_toast)
 
         mAnsweredInfo[mCurrentQuestionIndex] = isUserPressedTrue
 
