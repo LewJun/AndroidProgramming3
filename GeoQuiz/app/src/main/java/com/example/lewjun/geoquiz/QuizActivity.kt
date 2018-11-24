@@ -205,7 +205,7 @@ class QuizActivity : AppCompatActivity() {
         if (b != null) {
             mTrueButton.isEnabled = false
             mFalseButton.isEnabled = false
-            toast("You've answered $b")
+            toast(getString(R.string.answered_msg, b))
         } else {
             mTrueButton.isEnabled = true
             mFalseButton.isEnabled = true
