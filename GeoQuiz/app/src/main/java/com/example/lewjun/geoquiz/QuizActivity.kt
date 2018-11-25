@@ -185,7 +185,8 @@ class QuizActivity : AppCompatActivity() {
         if (mAnsweredInfo.size == mQuestionBank.size) {
             val successCount = mAnsweredInfo.filter { it.value == mQuestionBank[it.key].answerTrue }.count()
             toast("The success rate ${DecimalFormat("##.##%")
-                    .format(successCount / mAnsweredInfo.size)}")
+                    .format(successCount * 1.0 / mAnsweredInfo.size * 1.0)}")
+            // above * 1.0 from int cast to double
         }
     }
 
