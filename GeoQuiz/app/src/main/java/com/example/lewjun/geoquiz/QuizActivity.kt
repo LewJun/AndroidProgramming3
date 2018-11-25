@@ -1,5 +1,7 @@
 package com.example.lewjun.geoquiz
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
@@ -17,6 +19,7 @@ class QuizActivity : AppCompatActivity() {
     private lateinit var mQuestionTextView: TextView
     private lateinit var mNextButton: ImageButton
     private lateinit var mPrevButton: ImageButton
+    private lateinit var mCheatButton: Button
 
     // 问题仓库
     private var mQuestionBank = arrayOf(
@@ -37,6 +40,8 @@ class QuizActivity : AppCompatActivity() {
     private val mAnsweredInfo = mutableMapOf<Int, Boolean>()
 
     private val ANSWERED_INFO = "ANSWERED_INFO"
+
+    private var mIsCheater = false
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
@@ -63,6 +68,16 @@ class QuizActivity : AppCompatActivity() {
             }
         }
 
+        initViews()
+
+        updateQuestion()
+    }
+
+    /**
+     * init views
+     */
+    fun initViews() {
+
         mTrueButton = findViewById(R.id.true_button)
         mTrueButton.setOnClickListener {
             checkAnswer(true)
@@ -87,7 +102,30 @@ class QuizActivity : AppCompatActivity() {
         mQuestionTextView.setOnClickListener {
             updateQuestionToNext()
         }
-        updateQuestion()
+
+        mCheatButton = findViewById(R.id.btn_cheat)
+        mCheatButton.setOnClickListener {
+            //            startActivity(Intent(thisActivity, CheatActivity::class.java))
+//            launch(CheatActivity::class.java)
+            val intent = CheatActivity.newIntent(thisActivity, mQuestionBank[mCurrentQuestionIndex].answerTrue)
+//            startActivity(intent)
+            startActivityForResult(intent, REQUEST_CODE_CHEAT)
+        }
+    }
+
+    companion object {
+        private const val REQUEST_CODE_CHEAT = 0
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode != Activity.RESULT_OK) return
+
+        if (requestCode == REQUEST_CODE_CHEAT) {
+            data?.let {
+                mIsCheater = CheatActivity.wasAnswerShown(data)
+            }
+        }
     }
 
     // 2 屏幕可见或重新可见后调用
@@ -175,7 +213,13 @@ class QuizActivity : AppCompatActivity() {
      */
     private fun checkAnswer(isUserPressedTrue: Boolean) {
         val isAnswerTrue = mQuestionBank[mCurrentQuestionIndex].answerTrue
-        toast(if (isUserPressedTrue == isAnswerTrue) R.string.correct_toast else R.string.incorrect_toast)
+        toast(
+                when {
+                    mIsCheater -> R.string.judgment_toast
+                    isUserPressedTrue == isAnswerTrue -> R.string.correct_toast
+                    else -> R.string.incorrect_toast
+                }
+        )
 
         mAnsweredInfo[mCurrentQuestionIndex] = isUserPressedTrue
 
@@ -205,5 +249,7 @@ class QuizActivity : AppCompatActivity() {
             mTrueButton.isEnabled = true
             mFalseButton.isEnabled = true
         }
+
+        mIsCheater = false
     }
 }
