@@ -41,7 +41,9 @@ class QuizActivity : AppCompatActivity() {
 
     private val ANSWERED_INFO = "ANSWERED_INFO"
 
-    private var mIsCheater = false
+    private val mCheatedInfo = mutableMapOf<Int, Boolean>()
+
+    private val CHEAT_STATE = "CHEAT_STATE"
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
@@ -50,6 +52,10 @@ class QuizActivity : AppCompatActivity() {
 
             mAnsweredInfo.entries.forEach {
                 outState.putString("$ANSWERED_INFO${it.key}", "${it.key}:${it.value}")
+            }
+
+            mCheatedInfo.entries.forEach {
+                outState.putString("$CHEAT_STATE${it.key}", "${it.key}:${it.value}")
             }
         }
     }
@@ -60,11 +66,16 @@ class QuizActivity : AppCompatActivity() {
         logi(TAG, "onCreate called")
         setContentView(R.layout.activity_quiz)
 
-        mCurrentQuestionIndex = savedInstanceState?.getInt(QUESTION_INDEX, 0) ?: 0
-        savedInstanceState?.keySet()?.forEach {
-            if (it.startsWith(ANSWERED_INFO)) {
-                val values = savedInstanceState.getString(it).split(":")
-                mAnsweredInfo[values[0].toInt()] = values[1].toBoolean()
+        savedInstanceState?.let {
+            mCurrentQuestionIndex = it.getInt(QUESTION_INDEX, 0)
+            it.keySet()?.forEach {
+                if (it.startsWith(ANSWERED_INFO)) {
+                    val values = savedInstanceState.getString(it).split(":")
+                    mAnsweredInfo[values[0].toInt()] = values[1].toBoolean()
+                } else if (it.startsWith(CHEAT_STATE)) {
+                    val values = savedInstanceState.getString(it).split(":")
+                    mCheatedInfo[values[0].toInt()] = values[1].toBoolean()
+                }
             }
         }
 
@@ -123,7 +134,7 @@ class QuizActivity : AppCompatActivity() {
 
         if (requestCode == REQUEST_CODE_CHEAT) {
             data?.let {
-                mIsCheater = CheatActivity.wasAnswerShown(data)
+                mCheatedInfo[mCurrentQuestionIndex] = CheatActivity.wasAnswerShown(data)
             }
         }
     }
@@ -215,7 +226,7 @@ class QuizActivity : AppCompatActivity() {
         val isAnswerTrue = mQuestionBank[mCurrentQuestionIndex].answerTrue
         toast(
                 when {
-                    mIsCheater -> R.string.judgment_toast
+                    mCheatedInfo[mCurrentQuestionIndex] ?: false -> R.string.judgment_toast
                     isUserPressedTrue == isAnswerTrue -> R.string.correct_toast
                     else -> R.string.incorrect_toast
                 }
@@ -249,7 +260,5 @@ class QuizActivity : AppCompatActivity() {
             mTrueButton.isEnabled = true
             mFalseButton.isEnabled = true
         }
-
-        mIsCheater = false
     }
 }

@@ -15,6 +15,17 @@ class CheatActivity : AppCompatActivity() {
     private lateinit var mAnswerTextView: TextView
     private lateinit var mShowAnswerButton: Button
 
+    private var WAS_ANSWER_SHOWN = false
+
+    private val ANSWER_SHOWN = "ANSWER_SHOWN"
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        outState?.let {
+            outState.putBoolean(ANSWER_SHOWN, WAS_ANSWER_SHOWN)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_cheat)
@@ -22,21 +33,34 @@ class CheatActivity : AppCompatActivity() {
         mAnswerIsTrue = intent.getBooleanExtra(EXTRA_ANSWER_IS_TRUE, false)
 
         initViews()
-    }
 
-    fun initViews() {
-        mAnswerTextView = findViewById(R.id.tv_answer)
-        mShowAnswerButton = findViewById(R.id.btn_show_answer)
-        mShowAnswerButton.setOnClickListener {
-            mAnswerTextView.setText(
-                    if (mAnswerIsTrue) R.string.true_button
-                    else R.string.false_button
-            )
-            setAnswerShowResult(true)
+        savedInstanceState?.let {
+            if (it.getBoolean(ANSWER_SHOWN, false)) {
+                showAnswer()
+            }
         }
     }
 
-    fun setAnswerShowResult(isAnswerShown: Boolean) {
+    private fun initViews() {
+        mAnswerTextView = findViewById(R.id.tv_answer)
+        mShowAnswerButton = findViewById(R.id.btn_show_answer)
+        mShowAnswerButton.setOnClickListener {
+            showAnswer()
+            it.rotation = it.rotation + 180
+        }
+    }
+
+    private fun showAnswer() {
+        mAnswerTextView.setText(
+                if (mAnswerIsTrue) R.string.true_button
+                else R.string.false_button
+        )
+
+        WAS_ANSWER_SHOWN = true
+        setAnswerShowResult(true)
+    }
+
+    private fun setAnswerShowResult(isAnswerShown: Boolean) {
         val data = Intent()
         data.putExtra(EXTRA_ANSWER_SHOWN, isAnswerShown)
         setResult(Activity.RESULT_OK, data)
