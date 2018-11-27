@@ -1,10 +1,15 @@
 package com.example.lewjun.geoquiz
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.View
+import android.view.ViewAnimationUtils
 import android.widget.Button
 import android.widget.TextView
 
@@ -46,7 +51,26 @@ class CheatActivity : AppCompatActivity() {
         mShowAnswerButton = findViewById(R.id.btn_show_answer)
         mShowAnswerButton.setOnClickListener {
             showAnswer()
-            it.rotation = it.rotation + 180
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                val cx = it.width / 2
+                val cy = it.height / 2
+                val radius = it.width
+                val anim = ViewAnimationUtils.createCircularReveal(
+                        it, cx, cy, radius.toFloat(), 0.toFloat()
+                )
+                anim.addListener(object : AnimatorListenerAdapter() {
+                    override fun onAnimationEnd(animation: Animator?) {
+                        super.onAnimationEnd(animation)
+                        it.visibility = View.INVISIBLE
+                        it.rotation = it.rotation + 180
+                    }
+                })
+                anim.start()
+            } else {
+                it.visibility = View.INVISIBLE
+                it.rotation = it.rotation + 180
+            }
         }
     }
 
