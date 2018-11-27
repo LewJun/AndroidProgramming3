@@ -2,6 +2,7 @@ package com.example.lewjun.geoquiz
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
@@ -65,6 +66,7 @@ class QuizActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         logi(TAG, "onCreate called")
         setContentView(R.layout.activity_quiz)
+        toast("API Level ${Build.VERSION.SDK_INT}")
 
         savedInstanceState?.let {
             mCurrentQuestionIndex = it.getInt(QUESTION_INDEX, 0)
@@ -135,6 +137,15 @@ class QuizActivity : AppCompatActivity() {
         if (requestCode == REQUEST_CODE_CHEAT) {
             data?.let {
                 mCheatedInfo[mCurrentQuestionIndex] = CheatActivity.wasAnswerShown(data)
+
+                val cheatCount = mCheatedInfo.count()
+                val maxCheatCount = 3
+
+                mCheatButton.isEnabled = cheatCount < maxCheatCount
+
+                if (cheatCount > 0) {
+                    mCheatButton.text = resources.getString(R.string.cheat_button) + "($cheatCount/$maxCheatCount)"
+                }
             }
         }
     }
