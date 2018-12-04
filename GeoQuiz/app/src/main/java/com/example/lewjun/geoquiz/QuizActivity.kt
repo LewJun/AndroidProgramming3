@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TextView
+import com.google.gson.Gson
 import java.text.DecimalFormat
 
 class QuizActivity : AppCompatActivity() {
@@ -67,6 +68,8 @@ class QuizActivity : AppCompatActivity() {
         logi(TAG, "onCreate called")
         setContentView(R.layout.activity_quiz)
         toast("API Level ${Build.VERSION.SDK_INT}")
+        val userInfo = UserInfo(123L, "LewJun", "password", EnumSex.FEMALE, 30)
+        toast(Gson().toJson(userInfo))
 
         savedInstanceState?.let {
             mCurrentQuestionIndex = it.getInt(QUESTION_INDEX, 0)
